@@ -1,5 +1,71 @@
+% ===== 基础背景 =====
+@article{preskill2018nisq,
+  title={Quantum Computing in the {NISQ} era and beyond},
+  author={Preskill, John},
+  journal={Quantum},
+  volume={2},
+  pages={79},
+  year={2018}
+}
+
+@article{barenco1995elementary,
+  title={Elementary gates for quantum computation},
+  author={Barenco, Adriano and Bennett, Charles H. and Cleve, Richard and DiVincenzo, David P. and Margolus, Norman and Shor, Peter and Sleator, Tycho and Smolin, John A. and Weinfurter, Harald},
+  journal={Physical Review A},
+  volume={52},
+  number={5},
+  pages={3457--3467},
+  year={1995}
+}
+
+@article{shende2006synthesis,
+  title={Synthesis of quantum-logic circuits},
+  author={Shende, Vivek V. and Bullock, Stephen S. and Markov, Igor L.},
+  journal={IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems},
+  volume={25},
+  number={6},
+  pages={1000--1010},
+  year={2006}
+}
+
+@article{welch2014diagonal,
+  title={Efficient quantum circuits for diagonal unitaries without ancillas},
+  author={Welch, Jonathan and Greenbaum, Daniel and Mostame, Sarah and Aspuru-Guzik, Al{\'a}n},
+  journal={New Journal of Physics},
+  volume={16},
+  number={3},
+  pages={033040},
+  year={2014}
+}
+
+@article{farhi2014qaoa,
+  title={A Quantum Approximate Optimization Algorithm},
+  author={Farhi, Edward and Goldstone, Jeffrey and Gutmann, Sam},
+  journal={arXiv preprint arXiv:1411.4028},
+  year={2014}
+}
+
+@article{grover1996,
+  title={A fast quantum mechanical algorithm for database search},
+  author={Grover, Lov K.},
+  booktitle={Proceedings of the twenty-eighth annual ACM symposium on Theory of computing},
+  pages={212--219},
+  year={1996}
+}
+
+@article{shor1997,
+  title={Polynomial-Time Algorithms for Prime Factorization and Discrete Logarithms on a Quantum Computer},
+  author={Shor, Peter W.},
+  journal={SIAM Journal on Computing},
+  volume={26},
+  number={5},
+  pages={1484--1509},
+  year={1997}
+}
+
+% ===== 本课题直接基础 =====
 @phdthesis{nisq-mcts-thesis,
-  title={NISQ时期下针对对角线酉矩阵的近似综合算法研究},
+  title={{NISQ}时期下针对对角线酉矩阵的近似综合算法研究},
   author={{杭州电子科技大学网络空间安全学院}},
   school={杭州电子科技大学},
   year={2024},
@@ -13,25 +79,13 @@
   year={2024}
 }
 
-@article{monteq2026,
-  title={{MonteQ}: A Monte Carlo Tree Search Based Quantum Circuit Synthesis Framework},
-  author={{Anonymous}},
-  journal={arXiv preprint arXiv:2604.19029},
-  year={2026}
-}
-
-@article{lipardi2025pwmcts,
-  title={Quantum Circuit Design using a Progressive Widening Enhanced Monte Carlo Tree Search},
-  author={Lipardi, Giovanni and others},
-  journal={Advanced Quantum Technologies},
-  year={2025}
-}
-
+% ===== 对角酉精确综合 =====
 @article{depth-opt-diagonal2024,
   title={Depth-optimized quantum circuit synthesis for diagonal unitary operators with asymptotically optimal gate count},
-  author={{Anonymous}},
+  author={Zhang, Shihao and Huang, Kai and Li, Lvzhou},
   journal={Physical Review A},
   volume={109},
+  number={4},
   pages={042601},
   year={2024},
   note={arXiv:2212.01002}
@@ -39,14 +93,23 @@
 
 @article{qudit-phase-gadget2025,
   title={Quantum circuit synthesis with qudit phase gadget method},
+  author={Yang, Shuai and Xu, Lihao and Tian, Guojing and Sun, Xiaoming},
   journal={arXiv preprint arXiv:2504.12710},
   year={2025}
 }
 
 @article{grid-diagonal2026,
   title={Asymptotically Optimal Circuit Depth for Diagonal Unitary Synthesis and Compilation on Two-Dimensional Grids},
+  author={Xu, Chengzhuo and Chen, Xiao and Liu, Zhihao and Li, Zhigang},
   journal={arXiv preprint arXiv:2606.17589},
   year={2026}
+}
+
+@article{reflection-symmetry2023,
+  title={Optimized synthesis of circuits for diagonal unitary matrices with reflection symmetry},
+  author={Huang, Xinchi and Kosugi, Taichi and Nishi, Hirofumi and Matsushita, Yu-ichiro},
+  journal={arXiv preprint arXiv:2310.06676},
+  year={2023}
 }
 
 @article{qflownet2026,
@@ -55,23 +118,89 @@
   year={2026}
 }
 
-@article{reflection-symmetry2023,
-  title={Optimized synthesis of circuits for diagonal unitary matrices with reflection symmetry},
-  journal={arXiv preprint arXiv:2310.06676},
+@article{phase-gadget-multiqubit2025,
+  title={Phase gadget compilation of quantum circuits using multiqubit gates},
+  author={Nemirovsky, Jonathan and Chuchem, Maya and Peleg, Lee and Solomons, Yakov},
+  journal={arXiv preprint arXiv:2510.16788},
+  year={2025}
+}
+
+@article{sun2023optimal,
+  title={Asymptotically Optimal Circuit Depth for Quantum State Preparation and General Unitary Synthesis},
+  author={Sun, Xiaoming and Tian, Guojing and Yang, Shuai and Yuan, Pei and Zhang, Shengyu},
+  journal={IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems},
+  volume={42},
+  number={10},
+  pages={3301--3314},
   year={2023}
 }
 
+% ===== MCTS =====
 @inproceedings{zhou2020mcts,
-  title={A Monte Carlo Tree Search Framework for Quantum Circuit Transformation},
+  title={A {Monte} {Carlo} Tree Search Framework for Quantum Circuit Transformation},
   author={Zhou, Xiangzhen and Feng, Yuan and Li, Sanjiang},
-  booktitle={ICCAD},
+  booktitle={IEEE/ACM International Conference on Computer-Aided Design (ICCAD)},
   year={2020}
 }
 
+@article{lipardi2025pwmcts,
+  title={Quantum Circuit Design using a Progressive Widening Enhanced {Monte} {Carlo} Tree Search},
+  author={Lipardi, Vincenzo and Dibenedetto, Domenica and Stamoulis, Georgios and Winands, Mark H. M.},
+  journal={Advanced Quantum Technologies},
+  year={2025},
+  note={arXiv:2502.03962}
+}
+
+@article{monteq2026,
+  title={{MonteQ}: A {Monte} {Carlo} Tree Search Based Quantum Circuit Synthesis Framework},
+  journal={arXiv preprint arXiv:2604.19029},
+  year={2026}
+}
+
+% ===== RL / 自动化综合 =====
+@article{qlsynth2025,
+  title={Quantum Circuit Synthesis via Reinforcement Learning: Automated Design of Efficient Quantum Algorithms ({QLSynth})},
+  journal={OpenReview},
+  year={2025}
+}
+
+@article{equivariant-rl-clifford2026,
+  title={Equivariant Reinforcement Learning for Clifford Quantum Circuit Synthesis},
+  journal={arXiv preprint arXiv:2605.10910},
+  year={2026}
+}
+
+@article{rl-pass-composition2026,
+  title={Reinforcement Learning for Adaptive Composition of Quantum Circuit Optimisation Passes},
+  journal={arXiv preprint arXiv:2601.21629},
+  year={2026}
+}
+
+@article{pauli-network-rl2025,
+  title={Pauli Network Circuit Synthesis with Reinforcement Learning},
+  journal={arXiv preprint arXiv:2503.14448},
+  year={2025}
+}
+
+@article{ostaszewski2019structure,
+  title={Structure optimization for parameterized quantum circuits},
+  author={Ostaszewski, Mateusz and Grant, Edward and Benedetti, Marcello},
+  journal={Quantum},
+  volume={5},
+  pages={391},
+  year={2021},
+  note={arXiv:1905.09692}
+}
+
+% ===== 密码分析 / QAOA =====
 @article{heys-qaoa2023,
   title={First Attempts at Cryptanalyzing a (Toy) Block Cipher by Means of Quantum Optimization Approaches},
-  journal={ScienceDirect},
-  year={2023}
+  author={Phab, Luc and Susini, Paul and Barbaresco, Fr{\'e}d{\'e}ric and others},
+  journal={Journal of Computational Science},
+  volume={69},
+  pages={102004},
+  year={2023},
+  note={Extended version of ICCS 2022}
 }
 
 @inproceedings{trivium-privacy2025,
@@ -86,8 +215,18 @@
   year={2025}
 }
 
-@article{qlsynth2025,
-  title={Quantum Circuit Synthesis via Reinforcement Learning: Automated Design of Efficient Quantum Algorithms ({QLSynth})},
-  journal={OpenReview},
+@article{pei2025dwave,
+  title={An Innovative Algorithm for Attacking Symmetric Ciphers Using {D}-Wave Quantum Annealing},
+  author={Pei, Z. and Hong, C. and Xia, F. and others},
+  journal={Tsinghua Science and Technology},
+  volume={30},
+  number={5},
+  pages={2184--2194},
   year={2025}
+}
+
+@article{qaoa-near-symmetric2024,
+  title={Quantum speedups in solving near-symmetric optimization problems by low-depth {QAOA}},
+  journal={arXiv preprint arXiv:2411.04979},
+  year={2024}
 }
