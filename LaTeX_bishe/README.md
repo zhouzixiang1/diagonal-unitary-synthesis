@@ -33,3 +33,18 @@ latexmk -c
 ## 封面信息
 
 请在 `main.tex` 中按实际填写姓名、学号、班级、专业、导师等 TODO 字段。
+
+## Overleaf 同步
+
+本目录是独立 Git 仓库，远程 `origin` 指向 Overleaf 项目。
+
+```bash
+cd LaTeX_bishe
+git pull origin main    # 拉取 Overleaf 上的修改
+git add -A && git commit -m "..."
+git push origin main    # 推送到 Overleaf
+```
+
+认证使用 Overleaf Git token（用户名可为 `git`，密码为 `olp_...` token）。请勿把 token 写入仓库文件。
+
+父仓库 `bishe` 仍会跟踪本目录源文件；编辑后如需两边都更新，请分别在嵌套仓库与父仓库各提交一次。

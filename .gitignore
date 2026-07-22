@@ -3,3 +3,6 @@
 # LaTeX 编译产物
 LaTeX_bishe/build/*
 !LaTeX_bishe/build/.gitkeep
+
+# Overleaf Ƕ�ײֿ�
+LaTeX_bishe/.git/
