@@ -1,0 +1,16 @@
+# 编译产物
+build/
+
+# 本地临时文件（若未走 latexmk outdir）
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv

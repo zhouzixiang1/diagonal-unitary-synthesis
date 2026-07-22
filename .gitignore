@@ -1,1 +1,5 @@
 .claude/
+
+# LaTeX 编译产物
+LaTeX_bishe/build/*
+!LaTeX_bishe/build/.gitkeep

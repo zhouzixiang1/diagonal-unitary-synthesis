@@ -1,0 +1,254 @@
+% !TEX encoding = UTF-8 Unicode
+% !TEX TS-program = xelatex
+% !BIB program = biber
+% !TEX root = main.tex
+%
+% 编译方式（产物输出到 build/）：
+%   latexmk -xelatex main.tex
+% 或：
+%   latexmk
+
+\documentclass{HDU-Bachelor-Thesis}
+
+\usepackage{biblatex}
+\usepackage{pdfpages}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{unicode-math}
+
+% ========== 封面信息：请按实际情况填写 ==========
+\title{面向密码分析QAOA攻击的相位重要性引导蒙特卡洛树搜索近似对角酉矩阵综合方法研究}
+\author{周梓翔}% TODO: 确认姓名
+\date{2027 年 5 月}
+\HDUyear{2027}
+\HDUschool{网络空间安全学院}
+\HDUmajor{网络空间安全}% TODO: 确认专业全称
+\HDUclassid{00000000}% TODO
+\HDUstudentid{00000000}% TODO
+\HDUadviser{杨帅}% TODO: 确认导师姓名
+\HDUfinishdate{2027 年 5 月}
+\HDUsigndate{2027 年 5 月}
+
+\addbibresource{ref.bib}
+\setmathfont{texgyretermes-math.otf}
+
+\begin{document}
+\pagenumbering{roman}
+\pagestyle{empty}
+
+\maketitle
+
+\clearpage
+\pagestyle{HDU-bachelor-empty}
+
+\section*{摘\hspace{2em}要}
+
+量子线路综合是连接量子算法与量子硬件的关键环节。对角酉矩阵广泛出现于量子态制备、哈密顿量模拟以及量子近似优化算法（QAOA）的相位分离算子中。在含噪声中等规模量子（NISQ）时代，以可控误差换取更少量子资源的近似综合，往往有助于提升实际线路保真度。
+
+已有本科毕业论文工作采用蒙特卡洛树搜索（MCTS）实现近似对角酉综合，最高可处理约12比特；后续研究进一步提出相位重要性引导的图路径搜索方法，将规模提升至约15比特。本文拟在继承前者搜索框架的基础上，引入相位重要性作为节点选择先验，并结合渐进加宽机制缓解分支爆炸，设计相位重要性引导的改进MCTS算法；同时以玩具密码上的QAOA已知明文攻击为应用场景，对相位分离算子做近似综合，给出资源消耗与攻击成功概率之间的权衡分析。
+
+本文工作目前仍处于开题与方法设计阶段，正文后续章节将随算法实现与实验推进逐步充实。
+
+\vspace{\baselineskip}\noindent
+\textsf{关键词：}对角酉矩阵；近似量子线路综合；蒙特卡洛树搜索；相位重要性；QAOA；密码分析
+
+\clearpage
+\section*{\textbf{ABSTRACT}}
+
+Quantum circuit synthesis bridges algorithm design and hardware implementation. Diagonal unitaries appear widely in state preparation, Hamiltonian simulation, and the phase-separation operator of the Quantum Approximate Optimization Algorithm (QAOA). In the NISQ era, approximate synthesis that trades controllable error for fewer resources can improve practical circuit fidelity.
+
+Prior undergraduate work applied Monte Carlo Tree Search (MCTS) to approximate diagonal unitary synthesis (up to about 12 qubits). A subsequent study introduced phase-importance-guided graph path search and scaled to about 15 qubits. Building on the MCTS framework, this thesis plans to incorporate phase importance as a search prior, adopt progressive widening to mitigate branching-factor explosion, and apply the resulting method to toy-cipher QAOA cryptanalysis, reporting the trade-off between resource savings and attack success probability.
+
+This document is a preliminary draft prepared at the proposal stage; later chapters will be completed as implementation and experiments progress.
+
+\vspace{\baselineskip}\noindent
+\textbf{Key words:} diagonal unitary; approximate quantum circuit synthesis; Monte Carlo Tree Search; phase importance; QAOA; cryptanalysis
+
+\clearpage
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{HDU-bachelor}
+
+% ============================================================
+\section{引言}
+
+\subsection{研究背景与意义}
+
+量子线路综合问题是连接量子算法设计与量子硬件实现的桥梁，在当前含噪声中等规模量子（NISQ）时代尤为关键。对角酉矩阵作为一类基础且泛用的酉变换，广泛出现在量子态制备、可对易 Pauli-$Z$ 项的哈密顿量模拟、QAOA 的相位分离算子以及 IQP 线路等场景中，其综合效率直接影响上层量子算法的可执行性。
+
+已有研究表明，在 NISQ 设备上适度近似原始算法（以可控误差换取更少的量子资源消耗），实际线路的保真度反而可能超过精确算法的实现。这为“近似综合”提供了坚实的实践动机。
+
+与此同时，量子计算对经典密码体系的潜在威胁已使量子密码分析资源估计成为网络空间安全领域的热点方向。近两年出现了大量将变分量子算法（尤其是 QAOA）直接用于密码分析的工作，将已知明文密钥恢复建模为 MAX-SAT/QUBO 问题。这类线路的核心组件——相位分离算子——本质上就是一个对角酉矩阵。由此，“近似对角酉矩阵综合”可为量子密码分析的资源优化提供方法学工具。
+
+\subsection{已有工作与本文定位}
+
+本课题直接建立在两项密切相关的已有成果之上：
+
+\begin{enumerate}
+  \item 本科毕业论文《NISQ时期下针对对角线酉矩阵的近似综合算法研究》采用 MCTS 完成近似对角酉综合，最高可综合约12比特\cite{nisq-mcts-thesis}；
+  \item Zhang 等人提出基于相位重要性的图路径搜索方法，最高可综合约15比特，并引入“算法效用比”等评价指标\cite{zhang2024approximate}。
+\end{enumerate}
+
+\textbf{本文定位}：继承前辈工作的 MCTS 问题设定与实验协议，而非简单复现；将相位重要性闭式得分引入节点选择先验，并探索渐进加宽等现代 MCTS 增强技术；进一步在玩具密码 QAOA 攻击场景中验证方法的应用价值。
+
+\subsection{研究内容与创新点（规划）}
+
+\begin{enumerate}
+  \item 提出相位重要性引导的 MCTS 节点选择策略，以闭式相位重要性得分替代人工加权公式；
+  \item 引入渐进加宽机制缓解搜索树分支爆炸，冲击更大规模比特数（目标超越原始工作12比特上限）；
+  \item 将近似对角酉综合应用于 QAOA 密码分析攻击线路的资源优化，给出资源--保真度--攻击成功率的量化权衡分析。
+\end{enumerate}
+
+% ============================================================
+\clearpage
+\section{国内外研究现状}
+
+\subsection{对角酉矩阵综合算法}
+
+近两年的研究重心已从早期的“CNOT 门计数优化”逐步转向“电路深度优化”与“硬件连通性约束”。深度最优的精确综合可将深度较此前方法近乎减半\cite{depth-opt-diagonal2024}；面向 qudit 与二维网格连通性的综合工作进一步拓展了应用边界\cite{qudit-phase-gadget2025,grid-diagonal2026}。另有研究利用生成流网络或反射对称性探索多样化综合范式\cite{qflownet2026,reflection-symmetry2023}。
+
+\textbf{观察}：上述工作几乎全部聚焦精确综合，“以近似换资源”这一维度在近期文献中仍相对少见——这也是两项基础工作最独特的贡献点。
+
+\subsection{蒙特卡洛树搜索在量子线路综合中的应用}
+
+MonteQ 面向哈密顿量模拟线路综合，采用上层 MCTS 搜索 Pauli 旋转排序的两层设计\cite{monteq2026}；PWMCTS 面向参数化量子线路结构设计，提出渐进加宽技术动态扩展动作空间\cite{lipardi2025pwmcts}；早期工作已将 MCTS 用于量子线路变换问题\cite{zhou2020mcts}。
+
+与强化学习等方法相比，MCTS 无需预训练、天然支持“给定资源找最优解”的 anytime 搜索，与本课题“输入 CNOT 数 / 输入误差”的任务设定高度契合。
+
+\subsection{量子计算与密码分析的交叉}
+
+已有工作尝试用 QAOA 攻击玩具分组密码、研究云端量子优化攻击的隐私风险，以及增强变分量子攻击算法等\cite{heys-qaoa2023,trivium-privacy2025,enhanced-vqaa2025}。需要强调的是：Grover 标记预言机相位仅取 $\{\pm 1\}$，不存在“近似省略次要相位”的空间；而 QAOA 相位分离算子 $U_C=\mathrm{diag}(e^{-i\gamma C(x)})$ 的相位由代价函数连续决定，与相位重要性方法更匹配，故本课题选择 QAOA 密码分析场景作为应用验证对象。
+
+% ============================================================
+\clearpage
+\section{问题定义与预备知识}
+
+\subsection{对角酉矩阵综合问题}
+
+记目标对角酉矩阵为
+\begin{equation}
+  U_T=\mathrm{diag}\bigl(e^{i\lambda_0},e^{i\lambda_1},\ldots,e^{i\lambda_{2^n-1}}\bigr),
+\end{equation}
+其中相位向量 $\lambda$ 与相位构件中 $R_z$ 旋转角向量 $\alpha$ 通过 Walsh--Hadamard 变换相关联。综合任务可归结为：在给定 CNOT 资源约束下，选择并排序若干相位构件（phase gadget），使合成线路对应的酉矩阵 $U_C$ 与 $U_T$ 的误差尽可能小；或在给定误差上限下最小化 CNOT 门数。
+
+\subsection{误差度量与效用比}
+
+对对角酉矩阵，可采用二范数形式度量误差：
+\begin{equation}
+  D(U_C,U_T)=\Biggl(\sum_i\Biggl(\frac{e^{i\lambda_i}-e^{i\lambda'_i}}{2}\Biggr)^{\!2}\Biggr)^{\!1/2}.
+\end{equation}
+算法效用比定义为“CNOT 节省比例 / 误差”，用于量化近似综合的性价比\cite{zhang2024approximate}。
+
+\subsection{前辈 MCTS 方法简述}
+
+前辈工作将每个候选相位位置建模为搜索树节点，节点属性包括 value、child、ancestor、father、visit、quality 等，并以人工加权公式进行节点选择\cite{nisq-mcts-thesis}：
+\begin{equation}
+  w_i=\beta_1\cdot\frac{\mathrm{quality}_i}{\mathrm{visit}_i}
+  +\beta_2\cdot\sum_j(n-d(i\!\to\!j))\alpha_j[\mathrm{visit}_j=0]
+  +\beta_3\cdot\sqrt{\frac{\mathrm{visitFather}_i}{\mathrm{visit}_i}}.
+\end{equation}
+三项分别对应现有解质量、未来潜力（汉明距离加权）与探索项；参数 $\alpha$ 的梯度下降优化延后到树搜索完成后统一进行。该方法最高可综合约12比特。
+
+\subsection{相位重要性简述}
+
+在资源受限时，优先保留 $|\alpha|$ 较大的相位构件更有利于降低误差。相位重要性可对 $|\alpha|$ 标准化后经 logistic 函数锐化得到\cite{zhang2024approximate}，作为后续搜索的闭式先验。
+
+% ============================================================
+\clearpage
+\section{相位重要性引导的蒙特卡洛树搜索方法}
+
+\emph{（本章为方法规划稿，具体算法细节、伪代码与实现将在后续版本中补充。）}
+
+\subsection{设计思路}
+
+本文将相位重要性得分 $\mathrm{Imp}[i]$ 引入 MCTS 节点选择，替代原公式中依赖人工调参的质量项，类比策略网络提供的先验概率；同时保留 visit/quality 的自适应更新以修正先验偏差。由此融合两项基础工作的优势：既保留 MCTS 的通用 anytime 搜索能力，又获得确定性方法的高效指导。
+
+\subsection{渐进加宽}
+
+借鉴 PWMCTS 的思路\cite{lipardi2025pwmcts}，控制节点实际展开的子节点数量随访问次数呈次线性增长，例如
+\begin{equation}
+  k=C\cdot N(\mathrm{parent})^{\alpha},
+\end{equation}
+以避免比特数增大时分支因子线性膨胀，是冲击15比特以上规模的关键手段。
+
+\subsection{参数优化策略}
+
+沿用“搜索阶段用 $\lambda$ 的二范数作代理评价、搜索完成后再对 $e^{i\lambda}$ 做梯度下降精修”的两阶段策略；是否引入更快的二阶优化方法，视中期实验结果决定。
+
+\subsection{与基线方法的关系}
+
+\begin{table}[htbp]
+  \centering
+  \caption{主要对比方法}
+  \label{tab:baselines}
+  \begin{tabular}{lll}
+    \toprule
+    方法 & 类型 & 来源 \\
+    \midrule
+    精确综合（闭式 CNOT 分解） & 精确 & 经典结果 \\
+    原始 MCTS & 近似 & 前辈毕业论文 \\
+    相位重要性图路径搜索 & 近似 & arXiv:2412.01869 \\
+    本文方法（相位重要性 MCTS + 渐进加宽） & 近似 & 本课题 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ============================================================
+\clearpage
+\section{实验设计}
+
+\subsection{测试场景}
+
+\begin{enumerate}
+  \item \textbf{场景一（核心方法验证）}：随机生成的对角酉矩阵，比特数覆盖 8/10/12/15，CNOT 削减比例约 5\%--50\%，并与已发表数值对齐比较。
+  \item \textbf{场景二（应用验证）}：玩具密码 QAOA 攻击线路的相位分离算子，比特规模控制在约 10--20，定位为方法论概念验证。
+\end{enumerate}
+
+\subsection{评价指标}
+
+CNOT 门数、线路深度、综合误差 $D(U_C,U_T)$、算法效用比、运行时间；场景二额外报告攻击成功概率的相对损失。
+
+\subsection{消融实验}
+
+分别验证“仅加入相位重要性先验”“仅加入渐进加宽”“两者都加入”三种配置，量化各改进点的贡献。
+
+% ============================================================
+\clearpage
+\section{面向密码分析的 QAOA 应用验证}
+
+\emph{（本章为应用规划稿。）}
+
+计划复现或自行设计小规模 SPN/Feistel 玩具密码的已知明文密钥恢复攻击，将其建模为 MAX-SAT/QUBO 实例并构造对应 QAOA 相位分离算子，作为待综合的目标对角酉矩阵。应用本文方法对该算子做近似综合，报告 CNOT/深度节省比例与攻击成功概率损失之间的权衡曲线。明确不涉及对真实规模密码（如 AES-128）的实际攻击。
+
+% ============================================================
+\clearpage
+\section{总结与展望}
+
+本文目前完成了研究背景梳理、问题定义与总体技术方案的初步设计，明确了在前辈 MCTS 工作基础上的改进方向与实验对比方案。后续工作将按如下节奏推进：
+
+\begin{enumerate}
+  \item 复现精确综合、原始 MCTS 与相位重要性图路径搜索三类基线；
+  \item 实现相位重要性引导的 MCTS，并集成渐进加宽；
+  \item 完成场景一对比实验与消融实验，整理阶段性结果；
+  \item 完成玩具密码 QAOA 应用验证，撰写全文并定稿。
+\end{enumerate}
+
+\clearpage
+\unnumberedsection{致谢}{致\hspace{2em}谢}
+
+感谢指导教师在选题与研究路线上的悉心指导。感谢前辈工作为本课题奠定的问题设定与算法基础。致谢内容将在论文定稿前进一步完善。
+
+\clearpage
+\phantomsection
+\printbibliography[heading=bibintoc]
+
+\clearpage
+\unnumberedsection{附录}{附\hspace{2em}录}
+
+附录将收录算法伪代码、补充实验数据与关键实现说明，待实验完成后补充。
+
+\end{document}

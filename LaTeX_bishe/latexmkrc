@@ -1,0 +1,12 @@
+# 编译产物统一输出到 build/
+$out_dir = 'build';
+$aux_dir = 'build';
+
+# 使用 XeLaTeX + biber（与模板要求一致）
+$pdf_mode = 5;
+$xelatex = 'xelatex -interaction=nonstopmode -synctex=1 %O %S';
+$biber = 'biber %O %B';
+
+# 确保能在工程根目录找到 .cls / 图片等资源
+ensure_path('TEXINPUTS', '.');
+ensure_path('BIBINPUTS', '.');
