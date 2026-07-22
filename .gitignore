@@ -1,8 +1,15 @@
 .claude/
 
-# LaTeX 编译产物
+# LaTeX build outputs
 LaTeX_bishe/build/*
 !LaTeX_bishe/build/.gitkeep
 
-# Overleaf Ƕ�ײֿ�
+# Overleaf nested repo
 LaTeX_bishe/.git/
+
+# Python
+code/**/__pycache__/
+code/**/*.egg-info/
+code/.pytest_cache/
+code/results/*.csv
+!code/results/.gitkeep

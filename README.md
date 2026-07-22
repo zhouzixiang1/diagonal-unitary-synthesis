@@ -21,3 +21,13 @@ arXiv:2412.01869 [quant-ph], Dec 2024
 两份文档研究同一问题（NISQ 时代对角线酉矩阵的近似综合），共享相同的理论基础：相位构件、Walsh-Hadamard 变换（关联目标相位向量 λ 与 Rz 旋转角向量 α）、误差的二范数定义 D(U_C, U_T)，以及“给定 CNOT 门数求最小误差 / 给定误差求最小门数”两类任务设定。
 
 毕业论文是较早完成的版本，核心算法为 MCTS 启发式树搜索；毕业论文未来工作中提出的“贪心 + TSP 变体”思路，后续演化为 arXiv 论文中更成熟、确定性的“相位重要性 + 图路径搜索”算法——用它取代了 MCTS，将可综合的比特规模从 12 提升到 15，并新增了“算法效用比”等定量评估指标与更完整的实验数据（Table 1–3）。
+
+## 基线复现代码
+
+见 [`code/`](code/)：在 conda 环境 **`bishe-diag`** 中复现精确综合 / MCTS / 相位重要性图路径三套基线。
+
+```bash
+conda activate bishe-diag
+cd code && pip install -e . && pytest -q
+python experiments/compare_baselines.py --qubits 5,8 --reductions 0.1,0.2 --trials 2
+```

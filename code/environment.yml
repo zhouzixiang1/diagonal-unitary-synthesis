@@ -1,0 +1,8 @@
+name: bishe-diag
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - numpy=2.0
+  - pytest
+  - pip
